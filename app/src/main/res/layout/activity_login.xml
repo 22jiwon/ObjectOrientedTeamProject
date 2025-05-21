@@ -25,12 +25,12 @@
             android:layout_marginBottom="32dp"
             android:scaleType="fitCenter"/>
 
-        <!-- 아이디 입력 -->
+        <!-- 이메일 입력 -->
         <EditText
-            android:id="@+id/editTextId"
+            android:id="@+id/email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="아이디"
+            android:hint="이메일"
             android:textColorHint="#999999"
             android:backgroundTint="#999999"
             android:inputType="text"
@@ -38,7 +38,7 @@
 
         <!-- 비밀번호 입력 -->
         <EditText
-            android:id="@+id/editTextPassword"
+            android:id="@+id/password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="비밀번호"
@@ -49,7 +49,7 @@
 
         <!-- 로그인 버튼 -->
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/buttonLogin"
+            android:id="@+id/login"
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:text="로그인"
@@ -66,7 +66,9 @@
             android:text="아이디찾기 | 비밀번호 찾기 | 회원가입"
             android:textColor="#000000"
             android:textSize="14sp"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"/>
 
     </LinearLayout>
 </LinearLayout>
