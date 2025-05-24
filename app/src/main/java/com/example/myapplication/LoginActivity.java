@@ -28,7 +28,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // ✅ 회원가입 이동 처리
         textLinks.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, SignupActivity.class);
+            Intent intent = new Intent(LoginActivity.this,Signup1Activity.class);
             startActivity(intent);
         });
 
