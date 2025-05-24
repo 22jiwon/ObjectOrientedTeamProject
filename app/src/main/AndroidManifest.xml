@@ -24,6 +24,9 @@
 
         <activity android:name=".LoginActivity"/>
         <activity android:name=".Signup1Activity"/>
+        <activity android:name=".Signup2Activity"/>
+        <activity android:name=".MypageActivity"/>
+        <activity android:name=".SalesHistoryActivity" />
 
     </application>
 
