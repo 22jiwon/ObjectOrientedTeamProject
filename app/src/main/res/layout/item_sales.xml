@@ -105,7 +105,7 @@
                 android:text="판매중"
                 android:textSize="15sp"
                 android:textColor="#000000"
-                android:background="@drawable/rounded_status_button" />
+                android:background="@drawable/login_button" />
         </LinearLayout>
 
     </RelativeLayout>

@@ -10,7 +10,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,9 +23,8 @@ public class Signup2Activity extends AppCompatActivity {
 
     private ImageView imageProfile;
     private EditText editNickname, editBirth;
-    private RadioButton checkboxRealname;
     private ImageButton btnSelectDate;
-    private Button btnDone;
+    private Button btnDone, btnCheckId;
     private Uri selectedImageUri;
 
     String email, password, password2, phone;
@@ -38,10 +36,10 @@ public class Signup2Activity extends AppCompatActivity {
 
         imageProfile = findViewById(R.id.imageProfile);
         editNickname = findViewById(R.id.editNickname);
-        checkboxRealname = findViewById(R.id.checkboxRealname);
         editBirth = findViewById(R.id.tv_selected_date);
         btnSelectDate = findViewById(R.id.btn_select_date);
         btnDone = findViewById(R.id.buttonNext);
+        btnCheckId = findViewById(R.id.buttonCheckId);  // 중복확인 버튼 연결
 
         // 1단계 정보 받기
         Intent intent = getIntent();
@@ -71,16 +69,27 @@ public class Signup2Activity extends AppCompatActivity {
             }, y, m, d).show();
         });
 
+        // 닉네임 중복 확인
+        btnCheckId.setOnClickListener(v -> {
+            String nickname = editNickname.getText().toString().trim();
+            if (nickname.isEmpty()) {
+                Toast.makeText(this, "닉네임을 입력하세요.", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // 여기에서 실제 서버에 닉네임 중복 확인 요청 보내는 코드가 들어가야 함
+            checkNicknameDuplicate(nickname);
+        });
+
         // 가입 완료
         btnDone.setOnClickListener(v -> {
             String nickname = editNickname.getText().toString().trim();
-            String name = checkboxRealname.isChecked() ? "홍길동" : nickname;
             String birth = editBirth.getText().toString().trim();
 
             try {
                 JSONObject json = new JSONObject();
                 json.put("userId", 1);
-                json.put("name", name);
+                json.put("name", nickname);
                 json.put("email", email);
                 json.put("password", password);
                 json.put("password2", password2);
@@ -89,6 +98,12 @@ public class Signup2Activity extends AppCompatActivity {
 
                 Log.d("회원가입 JSON", json.toString());
                 Toast.makeText(this, "회원가입 완료!", Toast.LENGTH_SHORT).show();
+
+                // 🔽 로그인 페이지로 이동
+                Intent goToLogin = new Intent(Signup2Activity.this, LoginActivity.class);
+                goToLogin.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(goToLogin);
+                finish(); // 뒤로가기 시 현재 액티비티가 남지 않도록 종료
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -103,6 +118,16 @@ public class Signup2Activity extends AppCompatActivity {
         if (requestCode == 100 && resultCode == RESULT_OK && data != null) {
             selectedImageUri = data.getData();
             imageProfile.setImageURI(selectedImageUri);
+        }
+    }
+
+    // 닉네임 중복확인 (임시 로직, 실제 서버 요청으로 대체 필요)
+    private void checkNicknameDuplicate(String nickname) {
+        // 예시: 닉네임이 "taken123"이면 중복
+        if (nickname.equalsIgnoreCase("taken123")) {
+            Toast.makeText(this, "이미 사용 중인 닉네임입니다.", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "사용 가능한 닉네임입니다.", Toast.LENGTH_SHORT).show();
         }
     }
 }

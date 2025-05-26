@@ -206,6 +206,7 @@
                     android:clipChildren="false">
 
                     <LinearLayout
+                        android:id="@+id/cardSell"
                         android:layout_width="match_parent"
                         android:layout_height="80dp"
                         android:orientation="vertical"
@@ -262,6 +263,7 @@
                     >
 
                     <LinearLayout
+                        android:id="@+id/cardBuy"
                         android:layout_width="160dp"
                         android:layout_height="80dp"
                         android:background="@drawable/card_bg"

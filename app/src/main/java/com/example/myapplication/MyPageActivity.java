@@ -18,10 +18,10 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import androidx.gridlayout.widget.GridLayout;
 
 
-
-public class MypageActivity extends AppCompatActivity {
+public class MyPageActivity extends AppCompatActivity {
 
     private ImageView imageProfile;
     private TextView tvUserName, tvScore, tvReview, tvSellCount, tvBuyCount, tvReportCount;
@@ -87,8 +87,8 @@ public class MypageActivity extends AppCompatActivity {
 
     private void setClickEvents() {
         tvReview.setOnClickListener(v -> startActivity(new Intent(this, ReviewActivity.class)));
-        btnHeart.setOnClickListener(v -> startActivity(new Intent(this, WishlistActivity.class)));
-        btnSell.setOnClickListener(v -> startActivity(new Intent(this, SellHistoryActivity.class)));
+        btnHeart.setOnClickListener(v -> startActivity(new Intent(this, FavoritesActivity.class)));
+        btnSell.setOnClickListener(v -> startActivity(new Intent(this, SalesHistoryActivity.class)));
         btnBuy.setOnClickListener(v -> startActivity(new Intent(this, BuyHistoryActivity.class)));
 
         btnReport.setOnClickListener(v -> {
