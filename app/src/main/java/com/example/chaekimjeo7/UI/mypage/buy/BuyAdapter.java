@@ -11,14 +11,14 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.chaekimjeo7.Model.BuyItem;
+import com.example.chaekimjeo7.Model.PurchaseItem;
 import com.example.chaekimjeo7.R;
 
 import java.util.List;
 
 public class BuyAdapter extends RecyclerView.Adapter<BuyAdapter.ViewHolder> {
 
-    private List<BuyItem> buyList;
+    private List<PurchaseItem> buyList;
     private Context context;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -36,7 +36,7 @@ public class BuyAdapter extends RecyclerView.Adapter<BuyAdapter.ViewHolder> {
         }
     }
 
-    public BuyAdapter(Context context, List<BuyItem> buyList) {
+    public BuyAdapter(Context context, List<PurchaseItem> buyList) {
         this.context = context;
         this.buyList = buyList;
     }
@@ -49,7 +49,7 @@ public class BuyAdapter extends RecyclerView.Adapter<BuyAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        BuyItem item = buyList.get(position);
+        PurchaseItem item = buyList.get(position);
         holder.title.setText(item.title);
         holder.price.setText(item.price + "원");
         Glide.with(context).load(item.imageUrl).into(holder.bookImage);
@@ -73,7 +73,7 @@ public class BuyAdapter extends RecyclerView.Adapter<BuyAdapter.ViewHolder> {
         return buyList.size();
     }
 
-    public void updateList(List<BuyItem> filteredList) {
+    public void updateList(List<PurchaseItem> filteredList) {
         this.buyList = filteredList;
         notifyDataSetChanged();
     }

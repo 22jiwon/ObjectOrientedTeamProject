@@ -2,23 +2,25 @@ package com.example.chaekimjeo7.UI.mypage.favorite;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chaekimjeo7.Model.FavoriteItem;
+import com.example.chaekimjeo7.Network.ApiCallback;
+import com.example.chaekimjeo7.Network.RetrofitHelper;
 import com.example.chaekimjeo7.R;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class FavoritesActivity extends AppCompatActivity {
 
     RecyclerView recyclerView;
     FavoriteAdapter adapter;
-    List<FavoriteItem> favoriteList;
+    List<FavoriteItem> favoriteList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,26 +30,31 @@ public class FavoritesActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycler_favorites);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 2));
 
-        favoriteList = new ArrayList<>();
         adapter = new FavoriteAdapter(this, favoriteList);
         recyclerView.setAdapter(adapter);
 
-        loadFavorites();
-
         findViewById(R.id.btn_back).setOnClickListener(v -> finish());
+
+        loadFavoriteListFromServer(); // ✅ 서버에서 불러옴
     }
 
-    private void loadFavorites() {
-        SharedPreferences prefs = getSharedPreferences("favorites", MODE_PRIVATE);
-        Map<String, ?> allFavorites = prefs.getAll();
+    private void loadFavoriteListFromServer() {
+        SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        int userId = prefs.getInt("userId", -1);
+        if (userId == -1) return;
 
-        for (Map.Entry<String, ?> entry : allFavorites.entrySet()) {
-            String[] value = entry.getValue().toString().split("::");
-            if (value.length == 2) {
-                favoriteList.add(new FavoriteItem(value[0], value[1]));
+        RetrofitHelper.getFavorites(this, userId, new ApiCallback<List<FavoriteItem>>() {
+            @Override
+            public void onSuccess(List<FavoriteItem> data) {
+                favoriteList.clear();
+                favoriteList.addAll(data);
+                adapter.notifyDataSetChanged();
             }
-        }
 
-        adapter.notifyDataSetChanged();
+            @Override
+            public void onFailure(String msg) {
+                Toast.makeText(FavoritesActivity.this, msg, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }
