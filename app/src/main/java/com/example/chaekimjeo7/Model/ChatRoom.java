@@ -1,6 +1,6 @@
 package com.example.chaekimjeo7.Model;
 
-public class ChatRoomItem {
+public class ChatRoom {
     private String roomId;
     private String otherUserId;
     private String otherUserName;
@@ -8,8 +8,8 @@ public class ChatRoomItem {
     private String lastMessage;
     private String lastSentAt;
 
-    public ChatRoomItem(String roomId, String otherUserId, String otherUserName,
-                        String otherUserProfileImage, String lastMessage, String lastSentAt) {
+    public ChatRoom(String roomId, String otherUserId, String otherUserName,
+                    String otherUserProfileImage, String lastMessage, String lastSentAt) {
         this.roomId = roomId;
         this.otherUserId = otherUserId;
         this.otherUserName = otherUserName;

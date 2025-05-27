@@ -1,10 +1,5 @@
 package com.example.chaekimjeo7.UI.mypage;
 
-import com.example.chaekimjeo7.UI.mypage.buy.BuyHistoryActivity;
-import com.example.chaekimjeo7.UI.mypage.favorite.FavoritesActivity;
-import com.example.chaekimjeo7.Model.MyPageResponse;
-import com.example.chaekimjeo7.Network.RetrofitClient;
-import com.example.chaekimjeo7.Network.RetrofitService;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -23,7 +18,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.gridlayout.widget.GridLayout;
 
 import com.bumptech.glide.Glide;
+import com.example.chaekimjeo7.Model.MyPage;
+import com.example.chaekimjeo7.Model.ScheduleItem; // ✅ 서버에서 온 scheduleInfo 배열의 각 항목
+import com.example.chaekimjeo7.Network.RetrofitClient;
+import com.example.chaekimjeo7.Network.RetrofitService;
 import com.example.chaekimjeo7.R;
+import com.example.chaekimjeo7.Network.RetrofitHelper;
+import com.example.chaekimjeo7.UI.mypage.buy.BuyHistoryActivity;
+import com.example.chaekimjeo7.UI.mypage.favorite.FavoritesActivity;
 import com.example.chaekimjeo7.UI.mypage.review.ReviewActivity;
 import com.example.chaekimjeo7.UI.mypage.sales.SalesHistoryActivity;
 
@@ -42,13 +44,14 @@ public class MyPageActivity extends AppCompatActivity {
     private GridLayout timetableGrid;
 
     private String reportReason = "";
-    private String reportMessage = ""; // 서버에서 받은 신고 메시지
+    private String reportMessage = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mypage);
 
+        // ✅ 뷰 초기화
         imageProfile = findViewById(R.id.imageProfile);
         tvUserName = findViewById(R.id.tvUserName);
         tvScore = findViewById(R.id.tvScore);
@@ -63,55 +66,65 @@ public class MyPageActivity extends AppCompatActivity {
         btnAddTimetable = findViewById(R.id.btnAddTimetable);
         timetableGrid = findViewById(R.id.timetableGrid);
 
-        loadMyPageData();  // 서버에서 사용자 정보 + 신고 메시지 받아오기
-        setClickEvents();  // 버튼 클릭 이벤트 설정
+        loadMyPageData();   // ✅ 서버에서 유저 정보 로딩
+        setClickEvents();   // ✅ 클릭 이벤트 설정
     }
 
     private void loadMyPageData() {
-        RetrofitService api = RetrofitClient.getClient().create(RetrofitService.class);
-        Call<MyPageResponse> call = api.getMyPage();
-        call.enqueue(new Callback<MyPageResponse>() {
-            @Override
-            public void onResponse(Call<MyPageResponse> call, Response<MyPageResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    MyPageResponse data = response.body();
+        // ✅ 저장된 userId 불러오기
+        SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        int userId = prefs.getInt("userId", -1);
 
+        // ✅ userId가 없으면 에러 처리
+        if (userId == -1) {
+            Toast.makeText(this, "userId가 없습니다. 다시 로그인해주세요.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // ✅ API 요청
+        RetrofitService api = RetrofitHelper.getApiService();
+        Call<MyPage> call = api.getMyPage(userId); // ✅ userId 넘기기
+
+        call.enqueue(new Callback<MyPage>() {
+            @Override
+            public void onResponse(Call<MyPage> call, Response<MyPage> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    MyPage data = response.body();
+
+                    // 프로필 이미지
                     Glide.with(MyPageActivity.this)
                             .load(data.getProfileImage())
                             .into(imageProfile);
 
-                    tvUserName.setText(data.getNickname());
+                    tvUserName.setText(data.getName());
                     tvScore.setText(String.valueOf(data.getRating()));
-                    tvReview.setText("| 후기 " + data.getReviewCount());
-                    tvSellCount.setText(String.valueOf(data.getSellCount()));
-                    tvBuyCount.setText(String.valueOf(data.getBuyCount()));
-                    tvReportCount.setText(String.valueOf(data.getReportCount()));
+                    tvSellCount.setText(String.valueOf(data.getSaleCount()));
+                    tvBuyCount.setText(String.valueOf(data.getPurchaseCount()));
+                    tvReportCount.setText(String.valueOf(data.getWarningCount()));
 
                     reportReason = data.getReportReason();
-                    reportMessage = data.getMessage(); // ✅ 서버에서 신고 메시지 받아오기
+                    reportMessage = data.getMessage();
 
-                    showScheduleGrid(data.getScheduleInfo().getScheduleSummary());
+                    // ✅ 시간표 표시
+                    showScheduleGrid(data.getScheduleInfo());
 
-                    // ✅ 앱 최초 실행 시 한 번만 신고 메시지 팝업 띄우기
-                    if (reportMessage != null && !reportMessage.isEmpty()) {
-                        SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
-                        boolean alreadyShown = prefs.getBoolean("report_shown", false);
+                    SharedPreferences prefs = getSharedPreferences("loginPrefs", MODE_PRIVATE);
+                    boolean alreadyShown = prefs.getBoolean("report_shown", false);
 
-                        if (!alreadyShown) {
-                            new AlertDialog.Builder(MyPageActivity.this)
-                                    .setTitle("신고 알림")
-                                    .setMessage(reportMessage)
-                                    .setPositiveButton("확인", null)
-                                    .show();
-
-                            prefs.edit().putBoolean("report_shown", true).apply(); // ✅ 중복 방지
-                        }
+                    // 신고 메시지 첫 로드 시 알림 표시
+                    if (!alreadyShown && reportMessage != null && !reportMessage.isEmpty()) {
+                        new AlertDialog.Builder(MyPageActivity.this)
+                                .setTitle("신고 알림")
+                                .setMessage(reportMessage)
+                                .setPositiveButton("확인", null)
+                                .show();
+                        prefs.edit().putBoolean("report_shown", true).apply();
                     }
                 }
             }
 
             @Override
-            public void onFailure(Call<MyPageResponse> call, Throwable t) {
+            public void onFailure(Call<MyPage> call, Throwable t) {
                 Toast.makeText(MyPageActivity.this, "서버 통신 실패", Toast.LENGTH_SHORT).show();
             }
         });
@@ -123,12 +136,10 @@ public class MyPageActivity extends AppCompatActivity {
         btnSell.setOnClickListener(v -> startActivity(new Intent(this, SalesHistoryActivity.class)));
         btnBuy.setOnClickListener(v -> startActivity(new Intent(this, BuyHistoryActivity.class)));
 
-        // ✅ 사이렌 아이콘 클릭 시 신고 메시지 확인
+        // 신고 내역 팝업
         btnReport.setOnClickListener(v -> {
             String messageText = (reportMessage != null && !reportMessage.isEmpty())
-                    ? reportMessage
-                    : "신고 내역이 없습니다.";
-
+                    ? reportMessage : "신고 내역이 없습니다.";
             new AlertDialog.Builder(this)
                     .setTitle("신고 내역")
                     .setMessage(messageText)
@@ -136,6 +147,7 @@ public class MyPageActivity extends AppCompatActivity {
                     .show();
         });
 
+        // 시간표 등록 버튼
         btnAddTimetable.setOnClickListener(v -> {
             LayoutInflater inflater = LayoutInflater.from(this);
             View dialogView = inflater.inflate(R.layout.mp_add_timetable, null);
@@ -165,40 +177,59 @@ public class MyPageActivity extends AppCompatActivity {
                         String professor = editProfessor.getText().toString();
                         String day = daySpinner.getSelectedItem().toString();
                         String time = timeSpinner.getSelectedItem().toString();
-
                         String scheduleText = day + " " + time + " " + subject + " (" + professor + ")";
-                        uploadSchedule(scheduleText);
+
+                        // ✅ 서버 요구 형식대로 문자열을 리스트로 감싸서 넘김
+                        List<String> scheduleList = new java.util.ArrayList<>();
+                        scheduleList.add(scheduleText);
+                        uploadSchedule(scheduleList);
                     })
                     .setNegativeButton("취소", null)
                     .show();
         });
     }
 
-    private void uploadSchedule(String scheduleText) {
+    // ✅ 서버에 시간표 업로드: userId + List<String> scheduleSummary
+    private void uploadSchedule(List<String> scheduleSummary) {
+        SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        int userId = prefs.getInt("userId", -1); // 저장된 userId 불러오기
+
+        if (userId == -1) {
+            Toast.makeText(this, "userId 없음", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         RetrofitService api = RetrofitClient.getClient().create(RetrofitService.class);
-        Call<Void> call = api.postSchedule(scheduleText);
+        Call<Void> call = api.uploadSchedule(userId, scheduleSummary);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                Toast.makeText(MyPageActivity.this, "등록 완료", Toast.LENGTH_SHORT).show();
+                if (response.isSuccessful()) {
+                    Toast.makeText(MyPageActivity.this, "등록 완료", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(MyPageActivity.this, "등록 실패: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-                Toast.makeText(MyPageActivity.this, "등록 실패", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MyPageActivity.this, "서버 오류: " + t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    private void showScheduleGrid(List<String> scheduleList) {
+
+    // 시간표를 그리드에 표시
+    private void showScheduleGrid(List<ScheduleItem> scheduleList) {
         timetableGrid.removeAllViews();
-        timetableGrid.setColumnCount(6); // 요일 5 + 시간 라벨
-        timetableGrid.setRowCount(5);   // 최대 4교시 + 헤더
+        timetableGrid.setColumnCount(6);
+        timetableGrid.setRowCount(5);
 
         String[] days = {"", "월", "화", "수", "목", "금"};
-        for (int i = 0; i < days.length; i++) {
+
+        for (String day : days) {
             TextView tv = new TextView(this);
-            tv.setText(days[i]);
+            tv.setText(day);
             tv.setPadding(8, 8, 8, 8);
             timetableGrid.addView(tv);
         }
@@ -213,18 +244,28 @@ public class MyPageActivity extends AppCompatActivity {
             }
         }
 
-        for (String s : scheduleList) {
-            String[] parts = s.split(" ");
-            if (parts.length >= 3) {
-                String day = parts[0];
-                int row = Integer.parseInt(parts[1].replace("교시", ""));
-                String subject = parts[2];
+        for (ScheduleItem item : scheduleList) {
+            String day = item.getDay();
+            String subject = item.getSubject();
+            int row = getPeriodFromTime(item.getStartTime());
+            int col = java.util.Arrays.asList("월요일", "화요일", "수요일", "목요일", "금요일").indexOf(day) + 1;
+            int index = row * 6 + col;
 
-                int col = java.util.Arrays.asList("월", "화", "수", "목", "금").indexOf(day) + 1;
-                int index = row * 6 + col;
+            if (index < timetableGrid.getChildCount()) {
                 TextView targetCell = (TextView) timetableGrid.getChildAt(index);
                 targetCell.setText(subject);
             }
+        }
+    }
+
+    // 시간표 시간 → 교시로 매핑
+    private int getPeriodFromTime(String startTime) {
+        switch (startTime) {
+            case "09:00": return 1;
+            case "10:45": return 2;
+            case "13:00": return 3;
+            case "14:45": return 4;
+            default: return 1;
         }
     }
 }

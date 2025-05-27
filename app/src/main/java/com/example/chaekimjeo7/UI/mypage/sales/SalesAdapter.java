@@ -58,7 +58,7 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.SalesViewHol
 
         holder.tvDate.setText(item.createdAt);
         holder.tvTitle.setText(item.title);
-        holder.tvPrice.setText(item.price);
+        holder.tvPrice.setText(String.format("%,d원", item.price));
         holder.btnStatus.setText(item.status);
 
         Glide.with(holder.itemView.getContext())

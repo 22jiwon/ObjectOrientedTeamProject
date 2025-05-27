@@ -7,12 +7,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.chaekimjeo7.Model.FavoriteItem;
+import com.example.chaekimjeo7.Network.ApiCallback;
+import com.example.chaekimjeo7.Network.RetrofitHelper;
 import com.example.chaekimjeo7.R;
 
 import java.util.List;
@@ -30,7 +33,7 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_favorite, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_favorite, parent, false);
         return new ViewHolder(view);
     }
 
@@ -38,11 +41,13 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         FavoriteItem item = list.get(position);
 
+        // 이미지 로딩
         Glide.with(holder.itemView.getContext())
                 .load(item.imageUrl)
                 .placeholder(R.drawable.sample_book)
                 .into(holder.imageBook);
 
+        // 예약중일 경우 흐리게 표시
         if ("예약중".equals(item.status)) {
             holder.tvStatus.setVisibility(View.VISIBLE);
             holder.viewDim.setVisibility(View.VISIBLE);
@@ -51,14 +56,29 @@ public class FavoriteAdapter extends RecyclerView.Adapter<FavoriteAdapter.ViewHo
             holder.viewDim.setVisibility(View.GONE);
         }
 
+        // 하트 클릭 시 서버에 DELETE 요청
         holder.imageHeart.setOnClickListener(v -> {
-            SharedPreferences prefs = context.getSharedPreferences("favorites", Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = prefs.edit();
-            editor.remove(item.imageUrl); // key가 imageUrl인 경우
-            editor.apply();
-            list.remove(position);
-            notifyItemRemoved(position);
-            notifyItemRangeChanged(position, list.size());
+            int pos = holder.getAdapterPosition();
+            if (pos == RecyclerView.NO_POSITION) return;
+
+            FavoriteItem selectedItem = list.get(pos);
+            SharedPreferences prefs = context.getSharedPreferences("AppPrefs", Context.MODE_PRIVATE);
+            int userId = prefs.getInt("userId", -1);
+            if (userId == -1) return;
+
+            RetrofitHelper.deleteFavorite(context, userId, selectedItem.bookId, new ApiCallback<Void>() {
+                @Override
+                public void onSuccess(Void data) {
+                    list.remove(pos);
+                    notifyItemRemoved(pos);
+                    notifyItemRangeChanged(pos, list.size());
+                }
+
+                @Override
+                public void onFailure(String msg) {
+                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+                }
+            });
         });
     }
 

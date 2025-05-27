@@ -1,55 +1,102 @@
-    package com.example.chaekimjeo7.UI.mypage.sales;
+package com.example.chaekimjeo7.UI.mypage.sales;
 
-    import android.os.Bundle;
-    import android.widget.Button;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
-    import androidx.appcompat.app.AppCompatActivity;
-    import androidx.recyclerview.widget.LinearLayoutManager;
-    import androidx.recyclerview.widget.RecyclerView;
-    import android.widget.LinearLayout;
-    import android.view.View;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-    import com.example.chaekimjeo7.Model.SaleItem;
-    import com.example.chaekimjeo7.R;
+import com.example.chaekimjeo7.Model.SaleItem;
+import com.example.chaekimjeo7.Network.RetrofitHelper;
+import com.example.chaekimjeo7.Network.ApiCallback;
+import com.example.chaekimjeo7.R;
 
-    import java.util.ArrayList;
-    import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 
-    public class SalesHistoryActivity extends AppCompatActivity {
+public class SalesHistoryActivity extends AppCompatActivity {
 
-        RecyclerView recyclerView;
-        SalesAdapter salesAdapter;
-        List<SaleItem> salesList;
+    private RecyclerView recyclerView;
+    private SalesAdapter salesAdapter;
+    private List<SaleItem> salesList = new ArrayList<>();
+    private int userId;
 
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_sales_history);
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_sales_history);
 
-            recyclerView = findViewById(R.id.recycler_sales);
-            recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        // ✅ RecyclerView 초기화
+        recyclerView = findViewById(R.id.recycler_sales);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-            Button btnSetSelling = findViewById(R.id.btn_set_selling);
-            Button btnSetReserved = findViewById(R.id.btn_set_reserved);
-            Button btnSetSold = findViewById(R.id.btn_set_sold);
-            Button btnChangeMode = findViewById(R.id.btn_change_status);
+        // ✅ 버튼 바인딩
+        Button btnSetSelling = findViewById(R.id.btn_set_selling);
+        Button btnSetReserved = findViewById(R.id.btn_set_reserved);
+        Button btnSetSold = findViewById(R.id.btn_set_sold);
+        Button btnChangeMode = findViewById(R.id.btn_change_status);
+        LinearLayout layoutStatusButtons = findViewById(R.id.layout_status_buttons);
 
-            salesList = new ArrayList<>();
-            salesList.add(new SaleItem("자료구조", "12,000원", "2025-05-10", "판매중", "https://example.com/book1.jpg"));
-            salesList.add(new SaleItem("운영체제", "15,000원", "2025-05-11", "예약중", "https://example.com/book2.jpg"));
+        // ✅ 사용자 userId 가져오기 (SharedPreferences)
+        SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        userId = prefs.getInt("userId", -1);
+        if (userId == -1) {
+            Toast.makeText(this, "userId가 없습니다. 다시 로그인 해주세요.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-            salesAdapter = new SalesAdapter(salesList);
-            recyclerView.setAdapter(salesAdapter);
+        // ✅ 서버에서 판매내역 불러오기
+        RetrofitHelper.getSales(this, userId, new ApiCallback<List<SaleItem>>() {
+            @Override
+            public void onSuccess(List<SaleItem> data) {
+                salesList = data;
+                salesAdapter = new SalesAdapter(salesList);
+                recyclerView.setAdapter(salesAdapter);
+            }
 
-            LinearLayout layoutStatusButtons = findViewById(R.id.layout_status_buttons);
+            @Override
+            public void onFailure(String msg) {
+                Toast.makeText(SalesHistoryActivity.this, msg, Toast.LENGTH_SHORT).show();
+            }
+        });
 
-            btnChangeMode.setOnClickListener(v -> {
-                salesAdapter.toggleCheckboxVisibility(); // 체크박스 보이게
-                layoutStatusButtons.setVisibility(View.VISIBLE); // 상태 버튼들도 보이게
-            });
+        // ✅ 판매 상태 변경 모드로 전환
+        btnChangeMode.setOnClickListener(v -> {
+            if (salesAdapter != null) {
+                salesAdapter.toggleCheckboxVisibility(); // 체크박스 보이기
+                layoutStatusButtons.setVisibility(View.VISIBLE); // 상태 변경 버튼 보이기
+            }
+        });
 
-            btnSetSelling.setOnClickListener(v -> salesAdapter.updateStatusForSelectedItems("판매중"));
-            btnSetReserved.setOnClickListener(v -> salesAdapter.updateStatusForSelectedItems("예약중"));
-            btnSetSold.setOnClickListener(v -> salesAdapter.updateStatusForSelectedItems("판매완료"));
+        // ✅ 각 상태 버튼 클릭 시 선택된 아이템 상태 변경
+        btnSetSelling.setOnClickListener(v -> updateSelectedItemsStatus("판매중"));
+        btnSetReserved.setOnClickListener(v -> updateSelectedItemsStatus("예약중"));
+        btnSetSold.setOnClickListener(v -> updateSelectedItemsStatus("판매완료"));
+    }
+
+    // ✅ 선택된 아이템들의 거래 상태를 서버에 PATCH 요청
+    private void updateSelectedItemsStatus(String newStatus) {
+        for (SaleItem item : salesList) {
+            if (item.isSelected) {
+                RetrofitHelper.updateSaleStatus(this, userId, item.bookId, newStatus, new ApiCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void data) {
+                        item.status = newStatus;
+                        item.isSelected = false;
+                        salesAdapter.notifyDataSetChanged();
+                    }
+
+                    @Override
+                    public void onFailure(String msg) {
+                        Toast.makeText(SalesHistoryActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
         }
     }
+}
