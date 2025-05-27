@@ -7,10 +7,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- 오른쪽 하단 고정된 등록 버튼 (하단바와 겹치지 않도록 위에 배치) -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottomNavigationView"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="-195dp"
         android:background="#FFFFFF">
 
         <LinearLayout
@@ -51,12 +55,21 @@
                 android:layout_height="200dp"
                 android:layout_marginTop="24dp"
                 android:layout_marginBottom="8dp"
+                android:contentDescription="메인 배너 이미지"
                 android:scaleType="centerCrop"
-                android:src="@drawable/img_main_banner"
-                android:contentDescription="메인 배너 이미지" />
+                android:src="@drawable/img_main_banner" />
 
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/categoryViewPager"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:horizontalSpacing="12dp"
+                android:numColumns="5"
+                android:scrollbars="none"
+                android:stretchMode="columnWidth"
+                android:verticalSpacing="5dp" />
 
-            <!-- 카테고리 아이콘 10개 -->
+            <!-- 카테고리 아이콘 10개
             <GridView
                 android:id="@+id/categoryGrid"
                 android:layout_width="match_parent"
@@ -67,18 +80,17 @@
                 android:numColumns="5"
                 android:scrollbars="none"
                 android:stretchMode="columnWidth"
-                android:verticalSpacing="10dp" />
+                android:verticalSpacing="10dp" /> -->
 
 
             <!-- 상단: 사용자 정보 -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:paddingHorizontal="8dp"
-                android:layout_marginTop="0dp"
                 android:layout_marginBottom="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="8dp"
                 android:weightSum="1">
 
                 <TextView
@@ -86,8 +98,8 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
                     android:text="강민주 님"
-                    android:textStyle="bold"
-                    android:textSize="20sp" />
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -95,9 +107,9 @@
                     android:layout_weight="0.5"
                     android:gravity="end"
                     android:text="2025년 1학기"
-                    android:textStyle="bold"
+                    android:textColor="#888888"
                     android:textSize="18sp"
-                    android:textColor="#888888" />
+                    android:textStyle="bold" />
             </LinearLayout>
 
             <!-- 추천 영역 -->
@@ -106,7 +118,7 @@
                 android:layout_width="360dp"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="1dp"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="20dp"
                 android:background="#E3EBB7"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
@@ -167,7 +179,7 @@
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
-    <!-- 오른쪽 하단 고정된 등록 버튼 (하단바와 겹치지 않도록 위에 배치) -->
+
     <ImageButton
         android:id="@+id/fabRegister"
         android:layout_width="80dp"
