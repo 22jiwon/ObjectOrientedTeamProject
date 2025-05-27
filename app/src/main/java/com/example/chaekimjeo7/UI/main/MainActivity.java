@@ -17,7 +17,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.example.chaekimjeo7.UI.main.book.BookListAllActivity;
 import com.example.chaekimjeo7.UI.main.book.BookListByCategoryActivity;
-import com.example.chaekimjeo7.UI.main.book.BookRecommendActivity;
+import com.example.chaekimjeo7.UI.main.recommendation.BookRecommendActivity;
 import com.example.chaekimjeo7.UI.main.book.BookRegisterActivity;
 import com.example.chaekimjeo7.UI.main.category.CategoryEtcFragment;
 import com.example.chaekimjeo7.UI.main.category.CategoryMajorFragment;
@@ -86,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
             intent.putExtra("userId", 1);
             startActivity(intent);
         });
-
 
         // 바텀 네비게이션
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);

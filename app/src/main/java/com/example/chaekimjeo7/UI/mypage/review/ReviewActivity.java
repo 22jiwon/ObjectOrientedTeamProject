@@ -1,22 +1,20 @@
 package com.example.chaekimjeo7.UI.mypage.review;
 
-import com.example.chaekimjeo7.Model.ReviewItem;
-import com.example.chaekimjeo7.Model.ReviewResponse;
-import com.example.chaekimjeo7.Network.RetrofitClient;
-import com.example.chaekimjeo7.Network.RetrofitService;
-
 import android.os.Bundle;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import com.bumptech.glide.Glide;
-import com.example.chaekimjeo7.R;
 
-import retrofit2.*;
+import com.bumptech.glide.Glide;
+import com.example.chaekimjeo7.Model.ReviewItem;
+import com.example.chaekimjeo7.Network.ApiCallback;
+import com.example.chaekimjeo7.Network.RetrofitHelper;
+import com.example.chaekimjeo7.R;
 import java.util.*;
 
 public class ReviewActivity extends AppCompatActivity {
+
     private ImageView imageProfile;
     private TextView textNickname, textAverageRating, textReviewCount;
     private RatingBar ratingBar;
@@ -26,14 +24,15 @@ public class ReviewActivity extends AppCompatActivity {
     private List<ReviewItem> reviewList = new ArrayList<>();
     private Map<String, Integer> keywordCountMap = new HashMap<>();
 
-    private int sellerId = 1;
-    private int productId = 88;
+    private int sellerId = 1;    // 예시용 - 나중엔 Intent 등으로 받는 게 이상적
+    private int productId = 88;  // 예시용
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_review);
 
+        // ✅ 뷰 초기화
         imageProfile = findViewById(R.id.imageProfile);
         textNickname = findViewById(R.id.textNickname);
         textAverageRating = findViewById(R.id.textAverageRating);
@@ -41,16 +40,18 @@ public class ReviewActivity extends AppCompatActivity {
         ratingBar = findViewById(R.id.ratingBar);
         reviewRecyclerView = findViewById(R.id.reviewRecyclerView);
 
+        // ✅ RecyclerView 설정
         reviewRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new ReviewAdapter(reviewList);
         reviewRecyclerView.setAdapter(adapter);
 
-        loadReviews();
-        loadUserProfile(); // 마이페이지에서 끌어온 정보
+        loadUserProfile(); // 사용자 정보 표시
+        loadReviews();     // 리뷰 목록 불러오기
     }
 
+    // ✅ 유저 닉네임 / 프로필 이미지를 표시
     private void loadUserProfile() {
-        // 예시 - SharedPreferences나 Intent 등에서 받아올 수 있음
+        // 예시 하드코딩 (추후 SharedPreferences or Intent 로 수정 가능)
         String nickname = "책좋아";
         String profileImage = "https://cdn.site/img.jpg";
 
@@ -58,28 +59,25 @@ public class ReviewActivity extends AppCompatActivity {
         Glide.with(this).load(profileImage).circleCrop().into(imageProfile);
     }
 
+    // ✅ 서버에서 리뷰 목록 불러오기
     private void loadReviews() {
-        RetrofitService api = RetrofitClient.getClient().create(RetrofitService.class);
-        api.getReviews(productId, sellerId, 20, 0, "latest")
-                .enqueue(new Callback<ReviewResponse>() {
-                    @Override
-                    public void onResponse(Call<ReviewResponse> call, Response<ReviewResponse> response) {
-                        if (response.isSuccessful() && response.body() != null) {
-                            reviewList.clear();
-                            reviewList.addAll(response.body().reviews);
-                            adapter.notifyDataSetChanged();
+        RetrofitHelper.getReviews(this, productId, sellerId, new ApiCallback<List<ReviewItem>>() {
+            @Override
+            public void onSuccess(List<ReviewItem> reviews) {
+                reviewList.clear();
+                reviewList.addAll(reviews);
+                adapter.notifyDataSetChanged();
+                updateStats();
+            }
 
-                            updateStats();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<ReviewResponse> call, Throwable t) {
-                        Toast.makeText(ReviewActivity.this, "리뷰 불러오기 실패", Toast.LENGTH_SHORT).show();
-                    }
-                });
+            @Override
+            public void onFailure(String msg) {
+                Toast.makeText(ReviewActivity.this, msg, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
+    // ✅ 별점 평균, 후기 수 계산
     private void updateStats() {
         float totalRating = 0;
         keywordCountMap.clear();
@@ -89,11 +87,8 @@ public class ReviewActivity extends AppCompatActivity {
 
             if (item.keywords != null) {
                 for (String keyword : item.keywords) {
-                    if (keywordCountMap.containsKey(keyword)) {
-                        keywordCountMap.put(keyword, keywordCountMap.get(keyword) + 1);
-                    } else {
-                        keywordCountMap.put(keyword, 1);
-                    }
+                    int count = keywordCountMap.containsKey(keyword) ? keywordCountMap.get(keyword) : 0;
+                    keywordCountMap.put(keyword, count + 1);
                 }
             }
         }
@@ -106,14 +101,14 @@ public class ReviewActivity extends AppCompatActivity {
         updateKeywordUI();
     }
 
+    // ✅ 상단 키워드 카운트 UI 반영
     private void updateKeywordUI() {
-        // API 21 호환용으로 Map.of 대신 직접 생성
+        // 미리 정의된 키워드 ID들과 텍스트 키워드 매핑
         Map<Integer, Integer> keywordIds = new HashMap<>();
         keywordIds.put(1, R.id.keyword1_count);
         keywordIds.put(2, R.id.keyword2_count);
         keywordIds.put(3, R.id.keyword3_count);
 
-        // List.of → Arrays.asList로 대체
         List<String> targetKeywords = Arrays.asList(
                 "답장이 빨라요",
                 "교재설명과 실제상품이 동일해요",
@@ -121,15 +116,8 @@ public class ReviewActivity extends AppCompatActivity {
         );
 
         for (int i = 0; i < targetKeywords.size(); i++) {
-            String key = targetKeywords.get(i);
-
-            int count;
-            if (keywordCountMap.containsKey(key)) {
-                count = keywordCountMap.get(key);
-            } else {
-                count = 0;
-            }
-
+            String keyword = targetKeywords.get(i);
+            int count = keywordCountMap.containsKey(keyword) ? keywordCountMap.get(keyword) : 0;
             TextView countView = findViewById(keywordIds.get(i + 1));
             countView.setText(String.valueOf(count));
         }

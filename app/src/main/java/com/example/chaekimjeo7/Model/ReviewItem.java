@@ -1,11 +1,18 @@
 package com.example.chaekimjeo7.Model;
 
 public class ReviewItem {
-    public int reviewId;
-    public String reviewerNickname;
+    // 요청용 필드
+    public int reviewerId;
+    public int productId;
+    public int sellerId;
+    public int transactionId;
     public int rating;
     public String content;
+
+    // 응답용 필드
+    public int reviewId;
+    public String reviewerNickname;
+    public String productName;
     public String createdAt;
-    public String[] keywords; // 키워드 배열
-    public String productName; // 거래 상품명
+    public String[] keywords;
 }

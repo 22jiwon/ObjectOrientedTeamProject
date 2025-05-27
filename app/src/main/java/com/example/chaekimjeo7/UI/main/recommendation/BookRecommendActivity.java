@@ -1,4 +1,4 @@
-package com.example.chaekimjeo7.UI.main.book;
+package com.example.chaekimjeo7.UI.main.recommendation;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -10,7 +10,6 @@ import com.example.chaekimjeo7.Model.Recommendation;
 import com.example.chaekimjeo7.Network.RetrofitClient;
 import com.example.chaekimjeo7.Network.RetrofitService;
 import com.example.chaekimjeo7.R;
-import com.example.chaekimjeo7.UI.main.recommendation.RecommendationAdapter;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;

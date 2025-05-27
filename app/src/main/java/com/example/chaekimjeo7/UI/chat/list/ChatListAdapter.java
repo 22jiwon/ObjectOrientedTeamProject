@@ -8,7 +8,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.chaekimjeo7.Model.ChatRoomItem;
+import com.example.chaekimjeo7.Model.ChatRoom;
 import com.example.chaekimjeo7.R;
 
 import java.text.ParseException;
@@ -20,9 +20,9 @@ import java.util.Locale;
 public class ChatListAdapter extends BaseAdapter {
 
     private Context context;
-    private List<ChatRoomItem> chatRoomList;
+    private List<ChatRoom> chatRoomList;
 
-    public ChatListAdapter(Context context, List<ChatRoomItem> chatRoomList) {
+    public ChatListAdapter(Context context, List<ChatRoom> chatRoomList) {
         this.context = context;
         this.chatRoomList = chatRoomList;
     }
@@ -53,7 +53,7 @@ public class ChatListAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
-        ChatRoomItem item = chatRoomList.get(position);
+        ChatRoom item = chatRoomList.get(position);
 
         if (convertView == null) {
             convertView = LayoutInflater.from(context).inflate(R.layout.chat_list_item, parent, false);

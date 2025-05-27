@@ -5,6 +5,16 @@
       <config />
     </shared>
     <layouts>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_book_detail.xml">
+        <config>
+          <theme>@style/Theme.chaekimjeo7</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_book_list.xml">
+        <config>
+          <theme>@style/Theme.chaekimjeo7</theme>
+        </config>
+      </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_book_recommend.xml">
         <config>
           <theme>@style/Theme.MyApplication</theme>
@@ -52,12 +62,17 @@
       </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_signup1.xml">
         <config>
-          <theme>@style/Theme.MyApplication</theme>
+          <theme>@style/Theme.chaekimjeo7</theme>
         </config>
       </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/activity_signup2.xml">
         <config>
-          <theme>@style/Theme.MyApplication</theme>
+          <theme>@style/Theme.chaekimjeo7</theme>
+        </config>
+      </layout>
+      <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/chat_list_item.xml">
+        <config>
+          <theme>@style/Theme.chaekimjeo7</theme>
         </config>
       </layout>
       <layout url="file://$PROJECT_DIR$/app/src/main/res/layout/fragment_category_etc.xml">
@@ -106,7 +121,40 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="895e8736-8530-41ce-8899-045186f2c2da" name="Changes" comment=".." />
+    <list default="true" id="895e8736-8530-41ce-8899-045186f2c2da" name="Changes" comment="..">
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Model/MyPage.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Model/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Model/BuyItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Model/PurchaseItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Model/BuyResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Model/ChatRoomItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Model/ChatRoom.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Model/FavoriteItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Model/FavoriteItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Model/LoginResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Model/MyPageResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Model/Review.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Model/ReviewItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Model/ReviewItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Model/ReviewResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Model/SaleItem.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Model/SaleItem.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Network/ApiCallback.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Network/ApiCallback.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Network/RetrofitHelper.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Network/RetrofitHelper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Network/RetrofitService.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/Network/RetrofitService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/auth/LoginActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/auth/LoginActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/auth/Signup1Activity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/auth/Signup1Activity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/auth/Signup2Activity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/auth/Signup2Activity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/chat/list/ChatListActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/chat/list/ChatListActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/chat/list/ChatListAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/chat/list/ChatListAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/main/MainActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/main/MainActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/main/book/BookRecommendActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/main/recommendation/BookRecommendActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/mypage/MyPageActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/mypage/MyPageActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/mypage/buy/BuyAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/mypage/buy/BuyAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/mypage/buy/BuyHistoryActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/mypage/buy/BuyHistoryActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/mypage/favorite/FavoriteAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/mypage/favorite/FavoriteAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/mypage/favorite/FavoritesActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/mypage/favorite/FavoritesActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/mypage/review/ReviewActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/mypage/review/ReviewActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/mypage/review/ReviewAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/mypage/review/ReviewAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/mypage/sales/SalesAdapter.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/mypage/sales/SalesAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/mypage/sales/SalesHistoryActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/mypage/sales/SalesHistoryActivity.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -154,7 +202,7 @@
 }</component>
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/2giyeon/project1234.git&quot;,
+    &quot;url&quot;: &quot;https://github.com/minjuKang56/frontend_2.git&quot;,
     &quot;accountId&quot;: &quot;649e60c6-1660-4e51-a85f-8c2c67109455&quot;
   }
 }</component>
@@ -170,24 +218,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Android App.app.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "giyeon",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/sookmyung/MyApplication/app/src/main/res/layout",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.17",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "vcs.Git"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Android App.app.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;merge2&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/sookmyung/MyApplication/app/src/main/res/layout&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.17&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;vcs.Git&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\sookmyung\MyApplication\app\src\main\res\layout" />
@@ -342,29 +390,17 @@
     <MESSAGE value=".." />
     <option name="LAST_COMMIT_MESSAGE" value=".." />
   </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-field">
-          <url>file://$PROJECT_DIR$/app/src/main/java/com/example/chaekimjeo7/UI/mypage/review/ReviewAdapter.java</url>
-          <line>13</line>
-          <properties field="reviewList" class="com.example.chaekimjeo7.ReviewAdapter" />
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
-  </component>
   <component name="play_dynamic_filters_status">
     <option name="appIdToCheckInfo">
       <map>
         <entry key="com.example.chaekimjeo7">
           <value>
-            <CheckInfo lastCheckTimestamp="1748262565575" />
+            <CheckInfo lastCheckTimestamp="1748351287646" />
           </value>
         </entry>
         <entry key="com.example.chaekimjeo7.test">
           <value>
-            <CheckInfo lastCheckTimestamp="1748262565577" />
+            <CheckInfo lastCheckTimestamp="1748351287646" />
           </value>
         </entry>
         <entry key="com.example.myapplication">

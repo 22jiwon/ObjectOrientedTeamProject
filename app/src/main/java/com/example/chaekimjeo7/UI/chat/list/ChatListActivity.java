@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.chaekimjeo7.UI.chat.room.ChatRoomActivity;
 import com.example.chaekimjeo7.UI.main.MainActivity;
-import com.example.chaekimjeo7.Model.ChatRoomItem;
+import com.example.chaekimjeo7.Model.ChatRoom;
 import com.example.chaekimjeo7.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -19,7 +19,7 @@ import java.util.List;
 public class ChatListActivity extends AppCompatActivity {
 
     private ListView chatListView;
-    private List<ChatRoomItem> chatRooms;
+    private List<ChatRoom> chatRooms;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +30,7 @@ public class ChatListActivity extends AppCompatActivity {
         chatRooms = new ArrayList<>();
 
         // 더미
-        chatRooms.add(new ChatRoomItem(
+        chatRooms.add(new ChatRoom(
                 "room-001",               // roomId
                 "user-001",               // otherUserId
                 "이기연",                 // otherUserName
@@ -39,7 +39,7 @@ public class ChatListActivity extends AppCompatActivity {
                 "2025-05-03T10:30:00"     // lastSentAt
         ));
 
-        chatRooms.add(new ChatRoomItem(
+        chatRooms.add(new ChatRoom(
                 "room-002",
                 "user-002",
                 "정예원",
@@ -54,7 +54,7 @@ public class ChatListActivity extends AppCompatActivity {
 
         // 채팅방 클릭 시 채팅방 화면으로 이동
         chatListView.setOnItemClickListener((AdapterView<?> parent, android.view.View view, int position, long id) -> {
-            ChatRoomItem selectedChat = chatRooms.get(position);
+            ChatRoom selectedChat = chatRooms.get(position);
             Intent intent = new Intent(ChatListActivity.this, ChatRoomActivity.class);
             intent.putExtra("userName", selectedChat.getOtherUserName());
             startActivity(intent);
