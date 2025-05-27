@@ -69,18 +69,6 @@
                 android:stretchMode="columnWidth"
                 android:verticalSpacing="5dp" />
 
-            <!-- 카테고리 아이콘 10개
-            <GridView
-                android:id="@+id/categoryGrid"
-                android:layout_width="match_parent"
-                android:layout_height="180dp"
-                android:layout_marginTop="12dp"
-                android:layout_marginBottom="12dp"
-                android:horizontalSpacing="12dp"
-                android:numColumns="5"
-                android:scrollbars="none"
-                android:stretchMode="columnWidth"
-                android:verticalSpacing="10dp" /> -->
 
 
             <!-- 상단: 사용자 정보 -->
@@ -94,6 +82,7 @@
                 android:weightSum="1">
 
                 <TextView
+                    android:id="@+id/nameTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
@@ -193,7 +182,7 @@
         android:drawablePadding="8dp"
         android:elevation="6dp"
         android:paddingHorizontal="16dp"
-        android:src="@drawable/ic_add" />
+        android:src="@drawable/ic_add2" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"

@@ -6,17 +6,23 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+import com.example.chaekimjeo7.Network.RetrofitHelper;
+import com.example.chaekimjeo7.Network.ApiCallback;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.chaekimjeo7.UI.mypage.MyPageActivity;
 import com.example.chaekimjeo7.Model.Book;
+import com.example.chaekimjeo7.Network.*;
+import com.example.chaekimjeo7.Network.RetrofitService;
 import com.example.chaekimjeo7.R;
 import com.example.chaekimjeo7.UI.chat.list.ChatListActivity;
 import com.example.chaekimjeo7.UI.main.MainActivity;
@@ -27,11 +33,15 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class BookListAllActivity extends AppCompatActivity {
 
     private RecyclerView bookRecyclerView;
     private BookAdapter bookAdapter;
-    private List<Book> bookList;
+    private List<Book> bookList = new ArrayList<>();
 
     private EditText searchInput;
     private Button searchByTitleButton, searchByProfessorButton;
@@ -51,33 +61,18 @@ public class BookListAllActivity extends AppCompatActivity {
         bookRecyclerView = findViewById(R.id.bookRecyclerView);
         bookRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // 샘플 데이터
-        bookList = new ArrayList<>();
-        // 공과대학
-        bookList.add(new Book("인공지능개론", 15000, 25000, 18000, R.drawable.book_sample1, "박교수", "공과대학", false, "깨끗함"));
-        bookList.add(new Book("프로그래밍 기초", 14000, 22000, 16000, R.drawable.book_sample2, "이공학", "공과대학", true, "필기 조금 있음"));
-        bookList.add(new Book("논리회로", 12000, 21000, 15000, R.drawable.book_sample3, "최교수", "공과대학", false, "겉표지 훼손 없음"));
-
-        // 이과대학
-        bookList.add(new Book("미적분학", 10000, 19000, 14000, R.drawable.book_sample4, "정수학", "이과대학", false, "사용감 있음"));
-        bookList.add(new Book("물리학 실험", 11000, 20000, 15000, R.drawable.book_sample5, "김물리", "이과대학", false, "깨끗하게 사용함"));
-        bookList.add(new Book("화학의 세계", 9000, 18000, 13000, R.drawable.book_sample5, "박화학", "이과대학", false, "상태 보통"));
-
-        // 문과대학
-        bookList.add(new Book("고전문학읽기", 8000, 17000, 12000, R.drawable.book_sample5, "이문학", "문과대학", false, "필기 있음"));
-        bookList.add(new Book("서양철학입문", 9500, 18000, 14000, R.drawable.book_sample5, "서철학", "문과대학", false, "깨끗함"));
-        bookList.add(new Book("현대사회의 이해", 10500, 19000, 15000, R.drawable.book_sample5, "김사회", "문과대학", false, "사용감 보통"));
-
-
         bookAdapter = new BookAdapter(bookList, this);
         bookRecyclerView.setAdapter(bookAdapter);
+
+        // 실제 서버에서 데이터 받아오기
+        getAllBooksFromServer();
 
         // 🔗 XML 연결
         searchInput = findViewById(R.id.searchInput);
         searchByTitleButton = findViewById(R.id.searchByTitleButton);
         searchByProfessorButton = findViewById(R.id.searchByProfessorButton);
 
-        // 🔘 버튼 선택 로직
+        // 🔘 검색 기준 선택
         searchByTitleButton.setOnClickListener(v -> {
             selectedType = SearchType.TITLE;
             highlightSelectedTab(searchByTitleButton);
@@ -88,7 +83,7 @@ public class BookListAllActivity extends AppCompatActivity {
             highlightSelectedTab(searchByProfessorButton);
         });
 
-        // 🔍 검색 입력 감지
+        // 🔍 검색어 입력 감지
         searchInput.addTextChangedListener(new TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void afterTextChanged(Editable s) {}
@@ -110,23 +105,47 @@ public class BookListAllActivity extends AppCompatActivity {
             }
         });
 
-        // ⬇️ 하단 네비게이션 바
+        // 4. 하단 네비게이션 바
         BottomNavigationView bottomNav = findViewById(R.id.bottomNavigationView);
         bottomNav.setSelectedItemId(R.id.nav_home);
         bottomNav.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
             if (id == R.id.nav_home) {
-                startActivity(new Intent(this, MainActivity.class));
+                startActivity(new Intent(this, MainActivity.class)
+                        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP));
+                finish();
                 return true;
             } else if (id == R.id.nav_chat) {
                 startActivity(new Intent(this, ChatListActivity.class));
+                finish();
+                return true;
+            } else if (id == R.id.nav_profile) {
+                startActivity(new Intent(this, MyPageActivity.class));
+                finish();
                 return true;
             }
             return false;
         });
     }
 
-    // 버튼 하이라이트 표시
+    // ✅ 서버에서 교재 목록 받아오기 (fetchAllBooks 사용)
+    private void getAllBooksFromServer() {
+        RetrofitHelper.fetchAllBooks(this, new ApiCallback<List<Book>>() {
+            @Override
+            public void onSuccess(List<Book> response) {
+                bookList.clear();
+                bookList.addAll(response);
+                bookAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Toast.makeText(BookListAllActivity.this, "서버 오류: " + errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
     private void highlightSelectedTab(Button selected) {
         Button[] allTabs = {searchByTitleButton, searchByProfessorButton};
         for (Button btn : allTabs) {
@@ -135,7 +154,6 @@ public class BookListAllActivity extends AppCompatActivity {
         selected.setBackgroundResource(R.drawable.tab_selected);
     }
 
-    // 최근 검색어 저장
     private void saveRecentKeyword(String keyword) {
         SharedPreferences prefs = getSharedPreferences(PREF_RECENT, Context.MODE_PRIVATE);
         Set<String> recentSet = prefs.getStringSet(PREF_KEY, new LinkedHashSet<>());
@@ -146,3 +164,4 @@ public class BookListAllActivity extends AppCompatActivity {
         prefs.edit().putStringSet(PREF_KEY, newSet).apply();
     }
 }
+

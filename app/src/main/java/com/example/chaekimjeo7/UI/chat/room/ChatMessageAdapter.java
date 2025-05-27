@@ -1,4 +1,4 @@
-package com.example.chaekimjeo7.UI.chat;
+package com.example.chaekimjeo7.UI.chat.room;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -17,10 +17,12 @@ public class ChatMessageAdapter extends BaseAdapter {
 
     private Context context;
     private List<ChatMessage> messageList;
+    private int myUserId;  // ✅ 현재 사용자 ID
 
-    public ChatMessageAdapter(Context context, List<ChatMessage> messageList) {
+    public ChatMessageAdapter(Context context, List<ChatMessage> messageList, int myUserId) {
         this.context = context;
         this.messageList = messageList;
+        this.myUserId = myUserId;
     }
 
     @Override
@@ -52,16 +54,17 @@ public class ChatMessageAdapter extends BaseAdapter {
         TextView leftText = view.findViewById(R.id.leftMessageText);
         TextView rightText = view.findViewById(R.id.rightMessageText);
 
-        if (message.isSentByMe()) {
-            // 오른쪽 말풍선 표시 (내 메시지)
+        // ✅ 내 메시지인지 판단
+        if (message.getSenderId() == myUserId) {
+            // 오른쪽 말풍선 (내 메시지)
             leftLayout.setVisibility(View.GONE);
             rightLayout.setVisibility(View.VISIBLE);
-            rightText.setText(message.getMessageText());
+            rightText.setText(message.getMessage());
         } else {
-            // 왼쪽 말풍선 표시 (상대방 메시지)
+            // 왼쪽 말풍선 (상대방 메시지)
             rightLayout.setVisibility(View.GONE);
             leftLayout.setVisibility(View.VISIBLE);
-            leftText.setText(message.getMessageText());
+            leftText.setText(message.getMessage());
         }
 
         return view;

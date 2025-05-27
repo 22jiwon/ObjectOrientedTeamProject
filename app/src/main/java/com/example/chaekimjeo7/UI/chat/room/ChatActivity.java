@@ -1,4 +1,4 @@
-package com.example.chaekimjeo7.UI.chat;
+package com.example.chaekimjeo7.UI.chat.room;
 
 import android.content.Intent;
 import android.os.Bundle;

@@ -20,7 +20,7 @@ public class RecommendationAdapter extends RecyclerView.Adapter<RecommendationAd
     private ViewPager2 viewPager;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView  subjectView, professorView;
+        TextView subjectView, professorView;
         ImageButton nextBtn;
 
         public ViewHolder(View view) {
@@ -46,10 +46,8 @@ public class RecommendationAdapter extends RecyclerView.Adapter<RecommendationAd
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Recommendation item = recommendations.get(position);
-        holder.subjectView.setText("과목: " + item.subjectName);
-        holder.professorView.setText("교수: " + item.professor);
-
-
+        holder.subjectView.setText("과목: " + item.getSubjectName());
+        holder.professorView.setText("교수: " + item.getProfessor());
     }
 
     @Override

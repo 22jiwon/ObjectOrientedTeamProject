@@ -1,6 +1,27 @@
 package com.example.chaekimjeo7.Model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Recommendation {
-    public String subjectName;
-    public String professor;
+
+    @SerializedName("subjectName")
+    private String subjectName;
+
+    @SerializedName("professor")
+    private String professor;
+
+    // 생성자
+    public Recommendation(String subjectName, String professor) {
+        this.subjectName = subjectName;
+        this.professor = professor;
+    }
+
+    // Getter
+    public String getSubjectName() {
+        return subjectName;
+    }
+
+    public String getProfessor() {
+        return professor;
+    }
 }

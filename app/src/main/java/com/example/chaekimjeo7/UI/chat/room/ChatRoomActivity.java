@@ -1,5 +1,6 @@
 package com.example.chaekimjeo7.UI.chat.room;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.EditText;
@@ -10,9 +11,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.chaekimjeo7.UI.chat.ChatMessageAdapter;
 import com.example.chaekimjeo7.Model.ChatMessage;
+import com.example.chaekimjeo7.Network.ApiCallback;
+import com.example.chaekimjeo7.Network.RetrofitHelper;
 import com.example.chaekimjeo7.R;
+import com.example.chaekimjeo7.UI.chat.room.ChatMessageAdapter;
 import com.example.chaekimjeo7.UI.chat.list.ChatListActivity;
 
 import java.util.ArrayList;
@@ -25,60 +28,90 @@ public class ChatRoomActivity extends AppCompatActivity {
     private List<ChatMessage> messageList;
     private EditText messageEditText;
     private ImageView sendButton;
-    private TextView confirmTransactionButton; // ✅ Button → TextView로 변경
+    private TextView confirmTransactionButton;
+    private String roomId;
+    private int userId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_room);
 
-        // ① 상단 이름 표시
+        // ✅ 채팅방 이름 및 사용자 정보
+        roomId = getIntent().getStringExtra("roomId");
         String userName = getIntent().getStringExtra("userName");
+        userId = getSharedPreferences("loginPrefs", MODE_PRIVATE).getInt("uid", -1); // ❗userId는 헤더에 필요
+
+        if (roomId == null || userId == -1) {
+            Toast.makeText(this, "잘못된 접근입니다", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         TextView titleView = findViewById(R.id.chatRoomTitle);
         titleView.setText(userName);
 
-        // ② 뒤로가기 버튼 클릭 처리
         ImageView backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> {
-            Intent intent = new Intent(ChatRoomActivity.this, ChatListActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(this, ChatListActivity.class));
             finish();
         });
 
-        // ③ 메시지 리스트 연결
+        // ✅ 메시지 리스트 초기화
         messageListView = findViewById(R.id.messageListView);
         messageList = new ArrayList<>();
-
-        // 예시 메시지
-        messageList.add(new ChatMessage("안녕하세요! 책 구매하고 싶어요.", false));
-        messageList.add(new ChatMessage("넵! 가능합니다. 상태는 거의 새 책이에요.", true));
-        messageList.add(new ChatMessage("좋아요, 언제 거래 가능하실까요?", false));
-
-        adapter = new ChatMessageAdapter(this, messageList);
+        adapter = new ChatMessageAdapter(this, messageList, userId);
         messageListView.setAdapter(adapter);
 
-        // ④ 메시지 입력창 및 전송 버튼
+        // ✅ 메시지 입력 및 전송
         messageEditText = findViewById(R.id.messageEditText);
         sendButton = findViewById(R.id.sendButton);
-
         sendButton.setOnClickListener(v -> {
             String text = messageEditText.getText().toString().trim();
             if (!text.isEmpty()) {
-                ChatMessage newMessage = new ChatMessage(text, true);
-                messageList.add(newMessage);
-                adapter.notifyDataSetChanged();
+                sendMessage(text);
                 messageEditText.setText("");
-
-                messageListView.post(() -> messageListView.setSelection(adapter.getCount() - 1));
             }
         });
 
-        // ✅ ⑤ 거래확정 버튼 처리 (TextView → setOnClickListener)
+        // ✅ 거래확정 버튼
         confirmTransactionButton = findViewById(R.id.confirmTransactionButton);
         confirmTransactionButton.setOnClickListener(v -> {
             Toast.makeText(this, "거래가 확정되었습니다.", Toast.LENGTH_SHORT).show();
+        });
 
-            // TODO: 구매자/판매자 내역 저장 로직
+        // ✅ 서버에서 메시지 불러오기
+        loadMessages();
+    }
+
+    private void loadMessages() {
+        RetrofitHelper.fetchChatMessages(this, roomId, String.valueOf(userId), new ApiCallback<List<ChatMessage>>() {
+            @Override
+            public void onSuccess(List<ChatMessage> data) {
+                messageList.clear();
+                messageList.addAll(data);
+                adapter.notifyDataSetChanged();
+                messageListView.post(() -> messageListView.setSelection(adapter.getCount() - 1));
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Toast.makeText(ChatRoomActivity.this, "메시지 불러오기 실패: " + errorMessage, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void sendMessage(String messageText) {
+        RetrofitHelper.sendChatMessage(this, String.valueOf(userId), roomId, messageText, new ApiCallback<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                loadMessages(); // 전송 성공 후 메시지 새로고침
+            }
+
+            @Override
+            public void onFailure(String errorMessage) {
+                Toast.makeText(ChatRoomActivity.this, "메시지 전송 실패: " + errorMessage, Toast.LENGTH_SHORT).show();
+            }
         });
     }
 }

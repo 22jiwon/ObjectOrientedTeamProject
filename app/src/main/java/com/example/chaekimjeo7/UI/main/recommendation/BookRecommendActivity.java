@@ -1,4 +1,4 @@
-package com.example.chaekimjeo7.UI.main.book;
+package com.example.chaekimjeo7.UI.main.recommendation;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -6,20 +6,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.chaekimjeo7.Model.Recommendation;
-import com.example.chaekimjeo7.Network.RetrofitClient;
-import com.example.chaekimjeo7.Network.RetrofitService;
-import com.example.chaekimjeo7.R;
-import com.example.chaekimjeo7.UI.main.recommendation.RecommendationAdapter;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager2.widget.ViewPager2;
 
-import java.util.List;
+import com.example.chaekimjeo7.Model.Recommendation;
+import com.example.chaekimjeo7.Network.RetrofitHelper;
+import com.example.chaekimjeo7.Network.ApiCallback;
+import com.example.chaekimjeo7.R;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import java.util.List;
 
 public class BookRecommendActivity extends AppCompatActivity {
 
@@ -50,25 +45,18 @@ public class BookRecommendActivity extends AppCompatActivity {
             }
         });
 
-        loadRecommendations();
-    }
-
-    private void loadRecommendations() {
-        RetrofitService api = RetrofitClient.getClient().create(RetrofitService.class);
-        api.getBySchedule(userId).enqueue(new Callback<List<Recommendation>>() {
+        // ✅ 백엔드로부터 추천 데이터 불러오기
+        RetrofitHelper.fetchRecommendations(this, userId, new ApiCallback<List<Recommendation>>() {
             @Override
-            public void onResponse(Call<List<Recommendation>> call, Response<List<Recommendation>> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    List<Recommendation> data = response.body();
-                    RecommendationAdapter adapter = new RecommendationAdapter(data, viewPager);
-                    viewPager.setAdapter(adapter);
-                    setupIndicators(data.size()); // ●●● 만들기
-                }
+            public void onSuccess(List<Recommendation> data) {
+                RecommendationAdapter adapter = new RecommendationAdapter(data, viewPager);
+                viewPager.setAdapter(adapter);
+                setupIndicators(data.size());
             }
 
             @Override
-            public void onFailure(Call<List<Recommendation>> call, Throwable t) {
-                Toast.makeText(BookRecommendActivity.this, "시간표를 등록하세요", Toast.LENGTH_SHORT).show();
+            public void onFailure(String errorMessage) {
+                Toast.makeText(BookRecommendActivity.this, "추천 실패: " + errorMessage, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -76,7 +64,6 @@ public class BookRecommendActivity extends AppCompatActivity {
     // ●●● 점 생성
     private void setupIndicators(int size) {
         dotIndicator.removeAllViews();
-
         for (int i = 0; i < size; i++) {
             TextView dot = new TextView(this);
             dot.setText("●");

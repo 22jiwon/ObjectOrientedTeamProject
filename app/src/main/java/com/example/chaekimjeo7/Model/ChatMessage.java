@@ -1,19 +1,27 @@
 package com.example.chaekimjeo7.Model;
 
+import com.google.gson.annotations.SerializedName;
+
 public class ChatMessage {
-    private String messageText; // 메시지 내용
-    private boolean isSentByMe; // 내가 보낸 메시지인지 여부
 
-    public ChatMessage(String messageText, boolean isSentByMe) {
-        this.messageText = messageText;
-        this.isSentByMe = isSentByMe;
+    @SerializedName("senderId")
+    private int senderId;
+
+    @SerializedName("message")
+    private String message;
+
+    @SerializedName("sentAt")
+    private String sentAt;
+
+    public int getSenderId() {
+        return senderId;
     }
 
-    public String getMessageText() {
-        return messageText;
+    public String getMessage() {
+        return message;
     }
 
-    public boolean isSentByMe() {
-        return isSentByMe;
+    public String getSentAt() {
+        return sentAt;
     }
 }
