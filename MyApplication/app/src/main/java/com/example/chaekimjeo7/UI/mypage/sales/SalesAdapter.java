@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-import com.example.chaekimjeo7.UI.main.book.BookPurchaseDetailActivity;
 import com.example.chaekimjeo7.Model.SaleItem;
 import com.example.chaekimjeo7.R;
 
@@ -71,13 +70,7 @@ public class SalesAdapter extends RecyclerView.Adapter<SalesAdapter.SalesViewHol
         holder.checkbox.setOnCheckedChangeListener((btnView, isChecked) -> item.isSelected = isChecked);
 
         holder.ivArrow.setOnClickListener(v -> {
-            Context context = holder.itemView.getContext();
-            Intent intent = new Intent(context, BookPurchaseDetailActivity.class);
-            intent.putExtra("title", item.title);
-            intent.putExtra("price", item.price);
-            intent.putExtra("createdAt", item.createdAt);
-            intent.putExtra("imageUrl", item.imageUrl);
-            context.startActivity(intent);
+
         });
     }
 

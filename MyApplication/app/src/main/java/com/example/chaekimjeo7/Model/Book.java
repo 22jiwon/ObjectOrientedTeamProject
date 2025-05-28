@@ -9,6 +9,7 @@ public class Book implements Serializable {
     @SerializedName("productId")
     private Long productId;
 
+
     @SerializedName("status")
     private String status;
 

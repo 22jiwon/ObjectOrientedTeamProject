@@ -39,6 +39,9 @@ import java.io.InputStream;
 
 import com.google.gson.JsonObject;
 
+import android.util.Log;
+
+
 public class RetrofitHelper {
 
     private static RetrofitService apiService;
@@ -48,6 +51,31 @@ public class RetrofitHelper {
             apiService = RetrofitClient.getClient().create(RetrofitService.class);
         }
         return apiService;
+    }
+
+    //이메일 중복 확인
+    public static void checkEmail(Context context, String email, final ApiCallback<Boolean> callback) {
+        RetrofitService api = getApiService();
+
+        api.checkEmail(email).enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    boolean isDuplicate = response.body();
+                    Log.d("TEST", "이메일 중복 체크 성공: " + isDuplicate);
+                    callback.onSuccess(isDuplicate);
+                } else {
+                    Log.e("TEST", "이메일 중복 체크 실패: 응답 코드 = " + response.code());
+                    callback.onFailure("중복 체크 실패: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+                Log.e("TEST", "이메일 중복 체크 네트워크 오류: " + t.getMessage());
+                callback.onFailure("네트워크 오류: " + t.getMessage());
+            }
+        });
     }
 
     // ✅ 회원가입

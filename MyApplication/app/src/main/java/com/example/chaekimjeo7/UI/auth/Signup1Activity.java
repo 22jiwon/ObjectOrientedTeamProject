@@ -44,15 +44,15 @@ public class Signup1Activity extends AppCompatActivity {
             }
 
             RetrofitService service = RetrofitClient.getClient().create(RetrofitService.class);
-            service.checkEmail(email).enqueue(new retrofit2.Callback<User>() {
+            service.checkEmail(email).enqueue(new retrofit2.Callback<Boolean>() {
                 @Override
-                public void onResponse(retrofit2.Call<User> call, retrofit2.Response<User> response) {
+                public void onResponse(retrofit2.Call<Boolean> call, retrofit2.Response<Boolean> response) {
                     if (response.isSuccessful() && response.body() != null) {
-                        User result = response.body();
-                        if (result.getUserId() == 0) {
+                        boolean isDuplicate = response.body();
+                        if (!isDuplicate) {  // false면 사용 가능
                             isEmailAvailable = true;
                             Toast.makeText(Signup1Activity.this, "사용 가능한 이메일입니다.", Toast.LENGTH_SHORT).show();
-                        } else {
+                        } else {  // true면 이미 존재
                             isEmailAvailable = false;
                             Toast.makeText(Signup1Activity.this, "이미 가입된 이메일입니다.", Toast.LENGTH_SHORT).show();
                         }
@@ -62,10 +62,11 @@ public class Signup1Activity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(retrofit2.Call<User> call, Throwable t) {
+                public void onFailure(retrofit2.Call<Boolean> call, Throwable t) {
                     Toast.makeText(Signup1Activity.this, "네트워크 오류: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
+
         });
 
         // 다음 버튼 클릭 → 2단계로 이동

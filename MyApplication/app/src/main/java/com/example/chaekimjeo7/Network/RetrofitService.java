@@ -35,7 +35,7 @@ public interface RetrofitService {
 
     // ✅ 이메일 중복 확인 (회원가입 1단계)
     @GET("/api/users/check-email")
-    Call<User> checkEmail(@Query("email") String email);
+    Call<Boolean> checkEmail(@Query("email") String email);
 
     // ✅ 회원가입 요청 (회원가입 2단계)
     @POST("/api/users/signup")
